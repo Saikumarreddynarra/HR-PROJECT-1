@@ -1,23 +1,22 @@
 package com.example.bujji.Service;
 
-import java.util.Optional;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.example.bujji.Repository.UserRepository;
 import com.example.bujji.entity.User;
 import com.example.bujji.entity.User.Role;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = new BCryptPasswordEncoder(); // for hashing passwords
     }
 
     // ✅ Register new user
@@ -47,3 +46,4 @@ public class UserService {
     }
 
 }
+
