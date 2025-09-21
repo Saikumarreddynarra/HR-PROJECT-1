@@ -1,13 +1,23 @@
 package com.example.bujji.Controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.bujji.Service.CandidateService;
 import com.example.bujji.entity.Candidate;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/candidates")
@@ -20,9 +30,9 @@ public class CandidateController {
         this.service = service;
     }
 
-    private boolean isAdmin(HttpServletRequest request) {
-        String role = (String) request.getAttribute("role");
-        return "ADMIN".equals(role);
+    private boolean hasAccess(HttpServletRequest request) {
+        String role = request.getHeader("User-Role");
+        return "ADMIN".equals(role) || "HIRING_MANAGER".equals(role);
     }
 
     @GetMapping
@@ -39,19 +49,19 @@ public class CandidateController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Candidate c, HttpServletRequest request) {
-        if(!isAdmin(request)) return ResponseEntity.status(403).body("Forbidden");
+        if(!hasAccess(request)) return ResponseEntity.status(403).body("Forbidden");
         return ResponseEntity.ok(service.add(c));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Candidate c, HttpServletRequest request) {
-        if(!isAdmin(request)) return ResponseEntity.status(403).body("Forbidden");
+        if(!hasAccess(request)) return ResponseEntity.status(403).body("Forbidden");
         return ResponseEntity.ok(service.update(id, c));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest request) {
-        if(!isAdmin(request)) return ResponseEntity.status(403).body("Forbidden");
+        if(!hasAccess(request)) return ResponseEntity.status(403).body("Forbidden");
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
