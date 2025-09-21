@@ -17,29 +17,39 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/login", formData);
-      const { token, role } = response.data;
-
-      // store JWT in localStorage
-      localStorage.setItem("token", token);
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        formData
+      );
+      
+      const { role } = response.data;
+      
+      console.log('Login response:', response.data); // Debug log
+      console.log('Role received:', role); // Debug log
+      
+      // Store role in localStorage
       localStorage.setItem("role", role);
+      console.log('Role in localStorage after setting:', localStorage.getItem("role")); // Debug log
 
-      // redirect based on role
+      // Redirect based on role
       switch (role) {
         case "ADMIN":
           navigate("/admin-dashboard");
           break;
         case "RECRUITER":
-          navigate("/jobs");
+          navigate("/recruiter-dashboard");
           break;
         case "HIRING_MANAGER":
-          navigate("/candidates");
+          navigate("/hiring-dashboard");
           break;
         case "CANDIDATE":
-          navigate("/jobs");
+          navigate("/candidate-dashboard");
           break;
         default:
-          navigate("/");
+          setError("Invalid role");
+          localStorage.removeItem("role");
+          localStorage.removeItem("userId");
+          navigate("/login");
       }
     } catch (err) {
       console.error(err);

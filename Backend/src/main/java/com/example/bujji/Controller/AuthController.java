@@ -1,16 +1,18 @@
 package com.example.bujji.Controller;
 
-import com.example.bujji.Service.UserService;
-import com.example.bujji.entity.User;
-import com.example.bujji.security.JwtUtil;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.example.bujji.Service.UserService;
+import com.example.bujji.entity.User;
+import com.example.bujji.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,12 +37,10 @@ public class AuthController {
         String password = body.get("password");
         System.out.println(email+password);
         return userService.login(email, password)
-            .map(user -> {
-                String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
-                return ResponseEntity.ok(
-                    Map.of("token", token, "role", user.getRole().name())
-                );
-            })
+            .map(user -> ResponseEntity.ok(Map.of(
+                "role", user.getRole().name(),
+                "id", user.getId()
+            )))
             .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("message", "Invalid email or password")));
     }

@@ -41,10 +41,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/**")
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
@@ -53,8 +49,8 @@ public class SecurityConfig {
                 config.setAllowedHeaders(Arrays.asList("*"));
                 config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 return config;
-                
-            }));
+            }))
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 }
