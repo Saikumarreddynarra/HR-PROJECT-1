@@ -39,6 +39,4 @@ Built with **React** (frontend) and **Spring Boot + MySQL** (backend), the platf
 - Spring Security (JWT)
 - MySQL database
 
----
 
-## 📂 Project Structure
